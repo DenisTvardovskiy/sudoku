@@ -1,0 +1,20 @@
+<div class="body">
+    <div
+      class="row"
+      *ngFor="let row of map;
+      index as rowId"
+    >
+      <div
+        class="cell"
+        [attr.row]="rowId"
+        [attr.col]="cellId"
+        *ngFor="let cell of row index as cellId"
+        (click)="clickCell($event)"
+        [ngClass]="{'selected': cell?.selected, 'inScope': cell?.inScope}"
+        >
+          <span [ngClass]="{'default': !cell?.editable }">
+          {{cell?.value !== 0? cell?.value: ''}}
+        </span>
+      </div>
+    </div>
+</div>

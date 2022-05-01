@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans:wght@100;400&display=swap');
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+
+  &:nth-child(3n){
+    border-bottom: 1px solid black;
+  }
+
+  & > .cell:nth-child(3n){
+    border-right: 1px solid black;
+  }
+}
+
+.cell {
+  width: 100%;
+  height:  60px;
+  max-width: 60px;
+  color: #22577E;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Encode Sans', sans-serif;
+  font-size: 36px;
+  z-index: 2;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black ;
+
+  & > span {
+    pointer-events: none;
+  }
+}
+
+.body {
+  max-width: 540px;
+  border-right: 1px solid black;
+  border-top: 2px solid black ;
+  border-left: 1px solid black ;
+  background-color: #EFEFEF;
+}
+
+.default {
+  color: black;
+}
+
+.selected {
+  background-color: #7FB5FF;
+}
+
+.inScope {
+  background-color: #C4DDFF;
+}
