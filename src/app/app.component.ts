@@ -109,4 +109,6 @@ export class AppComponent{
       return row[col] = {...row[col], inScope:  !row[col].inScope}
     })
   }
+
+
 }
