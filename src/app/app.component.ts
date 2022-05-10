@@ -5,31 +5,34 @@ import {Component, ElementRef, HostListener, OnInit} from '@angular/core';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent{
+export class AppComponent {
 
   @HostListener('window:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     this.key = event.key;
-    if(this.selected.length){
+    if (this.selected.length) {
       const cellObj = this.map[this.selected[0]][this.selected[1]]
-      cellObj.editable && this.regExpNumbersOnly.test(this.key) ? cellObj.value = this.key: 0
+      cellObj.editable && this.regExpNumbersOnly.test(this.key) ? cellObj.value = this.key : 0
     }
   }
 
   @HostListener('window:keydown.backspace', ['$event'])
   handleBackSpace(event: KeyboardEvent) {
-    if(this.selected.length){
+    if (this.selected.length) {
       this.map[this.selected[0]][this.selected[1]].value = 0
     }
 
   }
-  key:any
+
+  key: any
   title = 'sudoku';
+
   constructor(private elementRef: ElementRef) {
     this.mapBuilder()
+    this.generateSudoku()
   }
 
-  regExpNumbersOnly =/^\d+$/;
+  regExpNumbersOnly = /^\d+$/;
 
   selected: number[] = []
 
@@ -42,25 +45,25 @@ export class AppComponent{
     inScope: false
   }
 
-  map:any = []
+  map: any = []
 
   template = [
-    [2,0,0, 5,4,9, 0,0,6],
-    [0,0,0, 0,0,7, 0,0,0],
-    [0,0,9, 6,2,0, 4,0,0],
+    [2, 0, 0, 5, 4, 9, 0, 0, 6],
+    [0, 0, 0, 0, 0, 7, 0, 0, 0],
+    [0, 0, 9, 6, 2, 0, 4, 0, 0],
 
-    [7,1,0, 0,0,0, 6,0,5],
-    [9,0,6, 0,0,0, 7,0,3],
-    [5,0,3, 0,0,0, 0,1,9],
+    [7, 1, 0, 0, 0, 0, 6, 0, 5],
+    [9, 0, 6, 0, 0, 0, 7, 0, 3],
+    [5, 0, 3, 0, 0, 0, 0, 1, 9],
 
-    [0,0,7, 0,5,1, 8,0,0],
-    [0,0,0, 4,0,0, 0,0,0],
-    [4,0,0, 8,9,3, 0,0,1],
+    [0, 0, 7, 0, 5, 1, 8, 0, 0],
+    [0, 0, 0, 4, 0, 0, 0, 0, 0],
+    [4, 0, 0, 8, 9, 3, 0, 0, 1],
   ]
 
   mapBuilder = () => {
-    this.map = this.template.map((row)=>{
-      return row.map((item)=> {
+    this.map = this.template.map((row) => {
+      return row.map((item) => {
         return {
           value: item,
           pencilMarks: [],
@@ -74,40 +77,98 @@ export class AppComponent{
   }
 
 
-  clickCell = (e:any) => {
+  clickCell = (e: any) => {
     const element = (e.target as HTMLElement)
     const row = element.attributes[3].value
     const col = element.attributes[4].value
-    let prevCell:any = this.selected
+    let prevCell: any = this.selected
     this.selected = [+row, +col]
 
-    if(prevCell.length){
+    if (prevCell.length) {
       this.toggleSelect(prevCell[0], prevCell[1])
     }
 
     this.toggleSelect(+row, +col)
 
-    if(prevCell[0] === +row && prevCell[1] ===+col){
+    if (prevCell[0] === +row && prevCell[1] === +col) {
       this.toggleSelect(+row, +col)
       this.selected = []
     }
   }
 
-  toggleSelect = (row:number, col:number) => {
+  toggleSelect = (row: number, col: number) => {
     this.map[+row][+col].selected = !this.map[+row][+col].selected;
     this.getScopeRow(this.map, +row)
     this.getScopeCol(this.map, +col)
   }
 
   getScopeRow = (map: any, row: number) => {
-    this.map[row] = map[+row].map((item:any)=> {
-      return {...item, inScope:  !item.inScope}
+    this.map[row] = map[+row].map((item: any) => {
+      return {...item, inScope: !item.inScope}
     })
   }
   getScopeCol = (map: any, col: number) => {
-    map.map((row:any)=> {
-      return row[col] = {...row[col], inScope:  !row[col].inScope}
+    map.map((row: any) => {
+      return row[col] = {...row[col], inScope: !row[col].inScope}
     })
+  }
+
+  generateSudoku = () => {
+    let newTemplate: any = []
+
+
+    for (let i = 0; i < 9; i++) {
+      newTemplate.push(this.generateRow(newTemplate))
+
+    }
+
+
+    console.log(newTemplate)
+  }
+
+  generateRow = (newTemp: any) => {
+    let newArr:any[] = []
+
+    while (newArr.length < 9) {
+      let number = this.getRandomNumber()
+      let a = 1
+      if (newTemp.length > 0) {
+
+
+
+        for (let i = 0; i < newTemp.length; i++) {
+          if ((newTemp[i][newArr.length] !== number)) {
+            if (this.checkNumber(newArr, number) ) {
+              if(!(a === 0)){
+                a = number
+              }
+            }else {
+              number = this.getRandomNumber()
+            }
+          }else {
+            a = 0
+          }
+        }
+        if(a){
+          newArr.push(a)
+        }
+
+
+
+      } else {
+        if (this.checkNumber(newArr, number)) newArr.push(number)
+      }
+    }
+
+    return newArr
+  }
+
+  checkNumber = (arr:any[], number: number) => {
+    return arr.indexOf(number) === -1
+  }
+
+  getRandomNumber=()=>{
+    return Math.floor(Math.random() * 9) + 1
   }
 
 
